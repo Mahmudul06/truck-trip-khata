@@ -3,8 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/appStore';
 
 const DRIVERS = [
-  { name: 'Rahim Ali', phone: '98765 43211', status: 'On Trip', color: '#EEF2FF', textColor: '#4F46E5' },
-  { name: 'Suresh Das', phone: '98765 43212', status: 'Available', color: '#DCFCE7', textColor: '#16A34A' },
+  { name: 'Mithu', phone: '70026 69491', status: 'Available', color: '#DCFCE7', textColor: '#16A34A' },
 ];
 
 export default function OwnerMorePage() {
@@ -22,11 +21,11 @@ export default function OwnerMorePage() {
       <div className="bg-white rounded-2xl p-5 flex items-center gap-4" style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
         <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black text-white"
           style={{ background: 'linear-gradient(135deg,#1A1D35,#4F46E5)' }}>
-          {user?.name?.[0] ?? 'R'}
+          {(user?.name ?? 'M')[0]}
         </div>
         <div>
-          <p className="font-black text-slate-900 text-lg">{user?.name ?? 'Ramesh Kumar'}</p>
-          <p className="text-sm text-slate-400">+91 {user?.phone?.replace(/(\d{5})(\d{5})/, '$1 $2') ?? '98765 43210'}</p>
+          <p className="font-black text-slate-900 text-lg">{user?.name ?? 'Mohibul'}</p>
+          <p className="text-sm text-slate-400">+91 {user?.phone?.replace(/(\d{5})(\d{5})/, '$1 $2') ?? '70025 58050'}</p>
           <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">Truck Owner</span>
         </div>
       </div>
@@ -47,18 +46,6 @@ export default function OwnerMorePage() {
                 style={{ background: d.color, color: d.textColor }}>{d.status}</span>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Truck */}
-      <div className="bg-white rounded-2xl p-5" style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
-        <p className="text-xs font-bold text-slate-400 tracking-wider mb-3">MY TRUCK</p>
-        <div className="flex items-center gap-3">
-          <span className="text-3xl">🚛</span>
-          <div>
-            <p className="font-black text-slate-900">AS01-1234</p>
-            <p className="text-xs text-slate-400">Active · 1 trip in progress</p>
-          </div>
         </div>
       </div>
 

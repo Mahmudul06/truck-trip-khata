@@ -13,24 +13,40 @@ const catColor: Record<string, string> = {
   police: '#DC2626', other: '#94A3B8',
 };
 
-const DEMO_TIMELINE = [
-  { type: 'start', time: '25 Sep · 07:30 AM', label: '🚦 Trip Started', sub: 'Guwahati, Assam', dot: '#2563EB' },
-  { type: 'money', time: '25 Sep · 07:35 AM', label: '💰 Owner Advance', sub: '+₹20,000', dot: '#16A34A', green: true },
-  { type: 'expense', time: '25 Sep · 09:15 AM', label: '⛽ Diesel', sub: '−₹5,000 · 48.62 L', dot: '#EA580C' },
-  { type: 'expense', time: '25 Sep · 01:20 PM', label: '🍽️ Food', sub: '−₹300 · Bongaigaon', dot: '#94A3B8' },
-  { type: 'expense', time: '25 Sep · 03:40 PM', label: '🛣️ Toll', sub: '−₹650', dot: '#94A3B8' },
-  { type: 'expense', time: '26 Sep · 10:45 AM', label: '⛽ Diesel', sub: '−₹4,500', dot: '#EA580C' },
-  { type: 'delivered', time: '26 Sep · 02:10 PM', label: '✅ Delivery Done', sub: 'Siliguri, West Bengal', dot: '#16A34A' },
-];
-
 export default function TimelinePage() {
   const router = useRouter();
-  const { activeTrip, expenses } = useAppStore();
-  const trip = activeTrip ?? { from: 'Guwahati', to: 'Siliguri', startDate: '2026-09-25' };
+  const { activeTrip, expenses, moneyEntries } = useAppStore();
 
-  const totalSpent = expenses.reduce((s, e) => s + e.amount, 0) || 10450;
-  const totalIn = 28000;
+  const totalIn = moneyEntries.reduce((s, m) => s + m.amount, 0);
+  const totalSpent = expenses.reduce((s, e) => s + e.amount, 0);
   const balance = totalIn - totalSpent;
+
+  if (!activeTrip) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-8 text-center">
+      <span className="text-6xl">📋</span>
+      <p className="font-black text-slate-800 text-lg">No active trip</p>
+      <p className="text-slate-400 text-sm">Your trip details will appear here once Mohibul creates a trip.</p>
+    </div>
+  );
+
+  // Build combined timeline from real data
+  const timeline = [
+    { time: activeTrip.startDate, label: '🚦 Trip Started', sub: activeTrip.from, dot: '#2563EB', green: false },
+    ...moneyEntries.map(m => ({
+      time: m.createdAt,
+      label: '💰 ' + (m.type === 'owner_advance' ? 'Owner Advance' : 'Customer Payment'),
+      sub: '+₹' + m.amount.toLocaleString('en-IN'),
+      dot: '#16A34A',
+      green: true,
+    })),
+    ...expenses.map(e => ({
+      time: e.createdAt,
+      label: (catIcon[e.category] ?? '📌') + ' ' + e.category.charAt(0).toUpperCase() + e.category.slice(1),
+      sub: '−₹' + e.amount.toLocaleString('en-IN'),
+      dot: catColor[e.category] ?? '#94A3B8',
+      green: false,
+    })),
+  ].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
 
   return (
     <div>
@@ -41,8 +57,8 @@ export default function TimelinePage() {
             className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm font-bold"
             style={{ background: 'rgba(255,255,255,0.15)' }}>←</button>
           <div>
-            <h2 className="text-white font-black text-lg">{trip.from} → {trip.to}</h2>
-            <p className="text-blue-300 text-xs">AS01-1234</p>
+            <h2 className="text-white font-black text-lg">{activeTrip.from} → {activeTrip.to}</h2>
+            <p className="text-blue-300 text-xs">{new Date(activeTrip.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -61,21 +77,29 @@ export default function TimelinePage() {
 
       {/* Timeline */}
       <div className="px-5 py-4">
-        {DEMO_TIMELINE.map((item, i) => (
-          <div key={i} className="flex gap-4">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 rounded-full mt-1 flex-shrink-0" style={{ background: item.dot }} />
-              {i < DEMO_TIMELINE.length - 1 && (
-                <div className="w-px flex-1 my-1" style={{ background: '#E2E8F0', minHeight: 36 }} />
-              )}
-            </div>
-            <div className="flex-1 pb-4">
-              <p className="text-xs text-slate-400 mb-0.5">{item.time}</p>
-              <p className="text-sm font-bold text-slate-800">{item.label}</p>
-              <p className={`text-xs font-semibold ${item.green ? 'text-green-600' : 'text-slate-400'}`}>{item.sub}</p>
-            </div>
+        {timeline.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-slate-400 text-sm">No entries yet. Add expenses using the home screen.</p>
           </div>
-        ))}
+        ) : (
+          timeline.map((item, i) => (
+            <div key={i} className="flex gap-4">
+              <div className="flex flex-col items-center">
+                <div className="w-3 h-3 rounded-full mt-1 flex-shrink-0" style={{ background: item.dot }} />
+                {i < timeline.length - 1 && (
+                  <div className="w-px flex-1 my-1" style={{ background: '#E2E8F0', minHeight: 36 }} />
+                )}
+              </div>
+              <div className="flex-1 pb-4">
+                <p className="text-xs text-slate-400 mb-0.5">
+                  {new Date(item.time).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                </p>
+                <p className="text-sm font-bold text-slate-800">{item.label}</p>
+                <p className={`text-xs font-semibold ${item.green ? 'text-green-600' : 'text-slate-400'}`}>{item.sub}</p>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       <div className="px-4 pb-4">

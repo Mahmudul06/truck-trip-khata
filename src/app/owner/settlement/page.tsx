@@ -26,7 +26,7 @@ export default function OwnerSettlementPage() {
             style={{ background: 'rgba(255,255,255,0.15)' }}>←</button>
           <div>
             <h2 className="text-white text-lg font-black">Trip Settlement</h2>
-            <p className="text-blue-300 text-xs">Guwahati → Siliguri · Rahim Ali</p>
+            <p className="text-blue-300 text-xs">Current Trip · Mithu</p>
           </div>
         </div>
       </div>

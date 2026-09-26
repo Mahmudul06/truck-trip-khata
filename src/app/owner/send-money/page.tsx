@@ -15,14 +15,14 @@ const METHODS: { id: PaymentMethod; icon: string; label: string; sub: string }[]
 
 export default function SendMoneyPage() {
   const router = useRouter();
-  const { addMoneyEntry, user, activeTrip } = useAppStore();
+  const { addMoneyEntry, user, activeTrip, moneyEntries, expenses } = useAppStore();
   const [amount, setAmount] = useState('0');
   const [method, setMethod] = useState<PaymentMethod>('cash');
   const [sent, setSent] = useState(false);
 
-  // Active trip driver (in real app, fetch from Firestore)
-  const driverName = 'Rahim Ali';
-  const driverBalance = 17550;
+  const totalIn = moneyEntries.reduce((s, m) => s + m.amount, 0);
+  const totalSpent = expenses.reduce((s, e) => s + e.amount, 0);
+  const driverBalance = totalIn - totalSpent;
 
   function handleSend() {
     if (parseFloat(amount) <= 0) return;
@@ -43,36 +43,31 @@ export default function SendMoneyPage() {
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
       <div className="text-7xl">✅</div>
       <p className="text-2xl font-black text-slate-900">Money Sent!</p>
-      <p className="text-slate-500">
-        ₹{parseFloat(amount).toLocaleString('en-IN')} → {driverName}
-      </p>
+      <p className="text-slate-500">₹{parseFloat(amount).toLocaleString('en-IN')} → Mithu</p>
       <p className="text-xs text-slate-400 capitalize">via {method}</p>
     </div>
   );
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center gap-3 px-5 pt-6 pb-5 bg-white border-b border-slate-100">
         <button onClick={() => router.back()}
           className="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-100 text-lg">←</button>
         <div>
           <h2 className="font-black text-slate-900 text-lg">💸 Send Money</h2>
-          <p className="text-xs text-slate-400">Send advance to driver</p>
+          <p className="text-xs text-slate-400">Send advance to Mithu</p>
         </div>
       </div>
 
       <div className="px-4 py-5 space-y-5">
-        {/* Driver info + current balance */}
+        {/* Driver info */}
         <div className="bg-white rounded-2xl p-4 flex items-center gap-4"
           style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
           <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white text-xl"
-            style={{ background: 'linear-gradient(135deg,#1A1D35,#4F46E5)' }}>
-            {driverName[0]}
-          </div>
+            style={{ background: 'linear-gradient(135deg,#1A1D35,#4F46E5)' }}>M</div>
           <div className="flex-1">
-            <p className="font-black text-slate-900">{driverName}</p>
-            <p className="text-xs text-slate-400">Guwahati → Siliguri · Active trip</p>
+            <p className="font-black text-slate-900">Mithu</p>
+            <p className="text-xs text-slate-400">+91 70026 69491</p>
           </div>
           <div className="text-right">
             <p className="text-xs text-slate-400 mb-0.5">Has with him</p>
@@ -80,7 +75,7 @@ export default function SendMoneyPage() {
           </div>
         </div>
 
-        {/* Amount display */}
+        {/* Amount */}
         <div className="text-center py-2">
           <p className="text-xs font-bold text-slate-400 tracking-widest mb-2">SEND AMOUNT (₹)</p>
           <p className="font-black text-green-600" style={{ fontSize: 52, lineHeight: 1 }}>
@@ -88,12 +83,11 @@ export default function SendMoneyPage() {
           </p>
           {parseFloat(amount) > 0 && (
             <p className="text-sm text-slate-400 mt-1">
-              Driver will have ₹{(driverBalance + parseFloat(amount)).toLocaleString('en-IN')} after this
+              Mithu will have ₹{(driverBalance + parseFloat(amount)).toLocaleString('en-IN')} after this
             </p>
           )}
         </div>
 
-        {/* Numpad */}
         <Numpad value={amount} onChange={setAmount} />
 
         {/* Payment method */}
@@ -115,7 +109,6 @@ export default function SendMoneyPage() {
           </div>
         </div>
 
-        {/* Send button */}
         <button onClick={handleSend} disabled={parseFloat(amount) <= 0}
           className="w-full py-5 rounded-2xl text-white font-bold text-lg disabled:opacity-40"
           style={{ background: 'linear-gradient(135deg,#15803D,#16A34A)' }}>

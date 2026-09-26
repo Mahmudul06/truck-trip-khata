@@ -11,27 +11,39 @@ export default function DriverHome() {
 
   useEffect(() => { hydrate(); }, [hydrate]);
 
-  const trip = activeTrip ?? {
-    id: 'demo', from: 'Guwahati', to: 'Siliguri', startDate: '2026-09-25',
-    status: 'active' as const, advanceAmount: 20000, freightAmount: 45000,
-    truckId: 'truck1', driverId: 'driver1', ownerId: 'owner1',
-  };
-
-  const totalReceived = moneyEntries.reduce((s, m) => s + m.amount, 0) || 28000;
-  const totalSpent = expenses.reduce((s, e) => s + e.amount, 0) || 9500;
+  const totalReceived = moneyEntries.reduce((s, m) => s + m.amount, 0);
+  const totalSpent = expenses.reduce((s, e) => s + e.amount, 0);
   const balance = totalReceived - totalSpent;
-
-  const recentExpenses = expenses.slice(0, 3).length
-    ? expenses.slice(0, 3)
-    : [
-        { id: '1', category: 'diesel' as const, amount: 4500, createdAt: '2026-09-26T10:45:00', tripId: 'demo', hasReceipt: false, createdBy: 'driver1', note: 'NH27' },
-        { id: '2', category: 'food' as const, amount: 300, createdAt: '2026-09-26T08:20:00', tripId: 'demo', hasReceipt: false, createdBy: 'driver1', note: 'Bongaigaon' },
-      ];
 
   const catIcon: Record<string, string> = {
     diesel: '⛽', toll: '🛣️', food: '🍽️', repair: '🔧',
     loading: '📦', unloading: '📤', police: '👮', other: '📌',
   };
+
+  const recentExpenses = expenses.slice(0, 3);
+
+  // No active trip state
+  if (!activeTrip) return (
+    <div>
+      <div className="px-5 pt-6 pb-8" style={{ background: '#1A1D35' }}>
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-xs font-bold tracking-widest mb-1" style={{ color: '#7B8AB8' }}>{t('myTrip')}</p>
+            <h2 className="text-2xl font-black text-white">Welcome, {user?.name ?? 'Mithu'}</h2>
+          </div>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-lg"
+            style={{ background: '#6C47FF' }}>
+            {(user?.name ?? 'M')[0]}
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col items-center justify-center px-8 py-16 text-center">
+        <span className="text-6xl mb-4">🚛</span>
+        <p className="font-black text-slate-800 text-lg mb-2">No active trip</p>
+        <p className="text-slate-400 text-sm">Mohibul will create a trip and assign it to you. Check back soon.</p>
+      </div>
+    </div>
+  );
 
   return (
     <div>
@@ -40,20 +52,18 @@ export default function DriverHome() {
         <div className="flex items-start justify-between mb-3">
           <div>
             <p className="text-xs font-bold tracking-widest mb-1" style={{ color: '#7B8AB8' }}>{t('myTrip')}</p>
-            <h2 className="text-2xl font-black text-white">{trip.from} → {trip.to}</h2>
+            <h2 className="text-2xl font-black text-white">{activeTrip.from} → {activeTrip.to}</h2>
           </div>
           <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-lg"
             style={{ background: '#6C47FF' }}>
-            {user?.name?.[0] ?? 'R'}
+            {(user?.name ?? 'M')[0]}
           </div>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm">🚛</span>
-            <span className="text-sm font-semibold" style={{ color: '#7B8AB8' }}>AS01-1234</span>
-            <span style={{ color: '#7B8AB8' }}>•</span>
             <span className="text-sm font-semibold" style={{ color: '#7B8AB8' }}>
-              {new Date(trip.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+              {new Date(activeTrip.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
             </span>
           </div>
           <span className="px-3 py-1 rounded-full text-xs font-bold text-white" style={{ background: '#16A34A' }}>
@@ -81,7 +91,7 @@ export default function DriverHome() {
           </div>
           <div className="text-right">
             <p className="text-xs mb-1" style={{ color: '#A5B4FC' }}>{t('expenses')}</p>
-            <p className="text-lg font-bold text-white">{expenses.length || 7} {t('items')}</p>
+            <p className="text-lg font-bold text-white">{expenses.length} {t('items')}</p>
           </div>
         </div>
       </div>
@@ -95,7 +105,7 @@ export default function DriverHome() {
           { icon: '📷', label: t('billPhoto'), color: '#7C3AED', href: '/driver/bill-photo' },
         ].map(({ icon, label, color, href }) => (
           <button key={label}
-            onClick={() => href && router.push(href)}
+            onClick={() => router.push(href)}
             className="bg-white rounded-2xl py-5 flex flex-col items-center gap-2"
             style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
             <span style={{ fontSize: 32 }}>{icon}</span>
@@ -117,23 +127,28 @@ export default function DriverHome() {
       {/* Recent */}
       <div className="mx-4 mt-4 mb-4">
         <p className="text-xs font-bold text-slate-400 tracking-widest mb-3">{t('recent')}</p>
-        <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
-          {recentExpenses.map((exp, i) => (
-            <div key={exp.id} className={`flex items-center px-4 py-3 gap-3 ${i < recentExpenses.length - 1 ? 'border-b border-slate-50' : ''}`}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
-                style={{ background: exp.category === 'diesel' ? '#FEF3C7' : exp.category === 'food' ? '#FEE2E2' : '#F1F5F9' }}>
-                {catIcon[exp.category]}
+        {recentExpenses.length === 0 ? (
+          <div className="bg-white rounded-2xl p-6 text-center" style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
+            <p className="text-slate-400 text-sm">No expenses yet. Add your first expense above.</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
+            {recentExpenses.map((exp, i) => (
+              <div key={exp.id} className={`flex items-center px-4 py-3 gap-3 ${i < recentExpenses.length - 1 ? 'border-b border-slate-50' : ''}`}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-slate-50">
+                  {catIcon[exp.category]}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-slate-800 capitalize">{exp.category}</p>
+                  <p className="text-xs text-slate-400">
+                    {new Date(exp.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+                <p className="font-bold text-red-500 text-sm">−₹{exp.amount.toLocaleString('en-IN')}</p>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-bold text-slate-800 capitalize">{exp.category}</p>
-                <p className="text-xs text-slate-400">
-                  {new Date(exp.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </div>
-              <p className="font-bold text-red-500 text-sm">−₹{exp.amount.toLocaleString('en-IN')}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

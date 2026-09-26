@@ -29,8 +29,8 @@ export default function DriverMorePage() {
           {user?.name?.[0] ?? 'R'}
         </div>
         <div>
-          <p className="font-black text-slate-900 text-lg">{user?.name ?? 'Rahim Ali'}</p>
-          <p className="text-sm text-slate-400">+91 {user?.phone?.replace(/(\d{5})(\d{5})/, '$1 $2') ?? '98765 43211'}</p>
+          <p className="font-black text-slate-900 text-lg">{user?.name ?? 'Mithu'}</p>
+          <p className="text-sm text-slate-400">+91 {user?.phone?.replace(/(\d{5})(\d{5})/, '$1 $2') ?? '70026 69491'}</p>
           <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">Driver</span>
         </div>
       </div>
@@ -41,8 +41,8 @@ export default function DriverMorePage() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">🚛</span>
           <div>
-            <p className="font-black text-slate-900">AS01-1234</p>
-            <p className="text-xs text-slate-400">Owner: Ramesh Kumar</p>
+            <p className="font-black text-slate-900">Your Truck</p>
+            <p className="text-xs text-slate-400">Owner: Mohibul</p>
           </div>
         </div>
       </div>

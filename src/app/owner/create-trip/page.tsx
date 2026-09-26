@@ -3,8 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const DRIVERS = [
-  { id: 'driver1', name: 'Rahim Ali', phone: '98765 43211', status: 'Available' },
-  { id: 'driver2', name: 'Suresh Das', phone: '98765 43212', status: 'Available' },
+  { id: 'driver1', name: 'Mithu', phone: '70026 69491', status: 'Available' },
 ];
 
 export default function CreateTripPage() {
@@ -63,9 +62,9 @@ export default function CreateTripPage() {
         {/* Route */}
         <div className="bg-white rounded-2xl p-4 space-y-3" style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
           <p className="text-xs font-bold text-slate-500 tracking-wider">ROUTE</p>
-          <input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="From (e.g. Guwahati)"
+          <input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="From city"
             className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-indigo-400" />
-          <input value={to} onChange={(e) => setTo(e.target.value)} placeholder="To (e.g. Siliguri)"
+          <input value={to} onChange={(e) => setTo(e.target.value)} placeholder="To city"
             className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-indigo-400" />
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
             className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-indigo-400" />
