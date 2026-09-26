@@ -111,7 +111,8 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   logout: () => {
     local.clearUser();
-    local.clearActiveTrip();
-    set({ user: null, activeTrip: null, expenses: [], moneyEntries: [] });
+    // Trip/expense data is shared between owner and driver — do NOT clear from localStorage.
+    // The next user's hydrate() will reload it. Only the user session is cleared.
+    set({ user: null, activeTrip: null, trips: [], expenses: [], moneyEntries: [] });
   },
 }));

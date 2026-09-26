@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Numpad from '@/components/shared/Numpad';
 import { useAppStore } from '@/store/appStore';
@@ -15,8 +15,10 @@ const METHODS: { id: PaymentMethod; icon: string; label: string; sub: string }[]
 
 export default function SendMoneyPage() {
   const router = useRouter();
-  const { addMoneyEntry, user, activeTrip, moneyEntries, expenses } = useAppStore();
+  const { hydrate, addMoneyEntry, user, activeTrip, moneyEntries, expenses } = useAppStore();
   const [amount, setAmount] = useState('0');
+
+  useEffect(() => { hydrate(); }, [hydrate]);
   const [method, setMethod] = useState<PaymentMethod>('cash');
   const [sent, setSent] = useState(false);
 

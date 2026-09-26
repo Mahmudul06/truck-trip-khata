@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/appStore';
 
@@ -21,8 +21,10 @@ interface SavedDoc {
 
 export default function BillPhotoPage() {
   const router = useRouter();
-  const { activeTrip, user } = useAppStore();
+  const { hydrate, activeTrip, user } = useAppStore();
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { hydrate(); }, [hydrate]);
 
   const [selectedType, setSelectedType] = useState('lr');
   const [capturedImage, setCapturedImage] = useState<string | null>(null);

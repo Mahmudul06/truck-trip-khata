@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Numpad from '@/components/shared/Numpad';
 import { useAppStore } from '@/store/appStore';
@@ -16,7 +16,9 @@ export default function MoneyPage() {
   const [amount, setAmount] = useState('0');
   const [saved, setSaved] = useState(false);
   const router = useRouter();
-  const { addMoneyEntry, user, activeTrip } = useAppStore();
+  const { hydrate, addMoneyEntry, user, activeTrip } = useAppStore();
+
+  useEffect(() => { hydrate(); }, [hydrate]);
 
   function handleSave() {
     if (parseFloat(amount) <= 0) return;

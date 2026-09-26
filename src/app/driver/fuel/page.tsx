@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Numpad from '@/components/shared/Numpad';
 import ReceiptButton from '@/components/shared/ReceiptButton';
@@ -13,7 +13,9 @@ export default function FuelPage() {
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const router = useRouter();
-  const { addExpense, user, activeTrip } = useAppStore();
+  const { hydrate, addExpense, user, activeTrip } = useAppStore();
+
+  useEffect(() => { hydrate(); }, [hydrate]);
 
   function handleSave() {
     if (parseFloat(amount) <= 0) return;

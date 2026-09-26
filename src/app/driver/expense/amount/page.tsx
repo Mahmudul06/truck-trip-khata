@@ -1,5 +1,5 @@
 'use client';
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Numpad from '@/components/shared/Numpad';
 import ReceiptButton from '@/components/shared/ReceiptButton';
@@ -18,7 +18,9 @@ function AmountForm() {
   const router = useRouter();
   const params = useSearchParams();
   const cat = (params.get('cat') ?? 'other') as ExpenseCategory;
-  const { addExpense, user, activeTrip } = useAppStore();
+  const { hydrate, addExpense, user, activeTrip } = useAppStore();
+
+  useEffect(() => { hydrate(); }, [hydrate]);
 
   function handleSave() {
     if (parseFloat(amount) <= 0) return;
