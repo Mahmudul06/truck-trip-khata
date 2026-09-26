@@ -5,11 +5,9 @@ import PhoneNumpad from '@/components/shared/PhoneNumpad';
 import { useAppStore } from '@/store/appStore';
 import { User } from '@/types';
 
-// Demo users — replace with Firestore lookup when Firebase is configured
 const DEMO_USERS: User[] = [
-  { id: 'owner1', name: 'Ramesh Kumar', phone: '9876543210', role: 'owner', truckId: 'truck1' },
-  { id: 'driver1', name: 'Rahim Ali', phone: '9876543211', role: 'driver', pin: '1234', truckId: 'truck1' },
-  { id: 'driver2', name: 'Suresh Das', phone: '9876543212', role: 'driver', pin: '5678', truckId: 'truck1' },
+  { id: 'owner1', name: 'Mohibul', phone: '7002558050', role: 'owner', truckId: 'truck1' },
+  { id: 'driver1', name: 'Mithu', phone: '7002669491', role: 'driver', pin: '1234', truckId: 'truck1' },
 ];
 
 export default function LoginPage() {
