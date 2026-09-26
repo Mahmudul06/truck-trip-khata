@@ -7,12 +7,14 @@ import { isFirebaseConfigured } from '@/lib/firebase';
 interface AppState {
   user: User | null;
   activeTrip: Trip | null;
+  trips: Trip[];
   expenses: Expense[];
   moneyEntries: MoneyEntry[];
   syncing: boolean;
 
   setUser: (u: User | null) => void;
   setActiveTrip: (t: Trip | null) => void;
+  addTrip: (t: Trip) => void;
   addExpense: (e: Expense) => Promise<void>;
   addMoneyEntry: (m: MoneyEntry) => Promise<void>;
   logout: () => void;
@@ -23,6 +25,7 @@ interface AppState {
 export const useAppStore = create<AppState>((set, get) => ({
   user: null,
   activeTrip: null,
+  trips: [],
   expenses: [],
   moneyEntries: [],
   syncing: false,
@@ -31,9 +34,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Always load from localStorage first (instant, works offline)
     const user = local.getUser();
     const activeTrip = local.getActiveTrip();
+    const trips = local.getTrips();
     const expenses = local.getExpenses();
     const moneyEntries = local.getMoneyEntries();
-    set({ user, activeTrip, expenses, moneyEntries });
+    set({ user, activeTrip, trips, expenses, moneyEntries });
 
     // Then sync from Firestore if configured and there's an active trip
     if (isFirebaseConfigured && activeTrip) {
@@ -66,6 +70,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (activeTrip) local.setActiveTrip(activeTrip);
     else local.clearActiveTrip();
     set({ activeTrip });
+  },
+
+  addTrip: (t) => {
+    local.addTrip(t);
+    set((s) => ({ trips: [t, ...s.trips] }));
+    if (t.status === 'active') {
+      local.setActiveTrip(t);
+      set({ activeTrip: t });
+    }
   },
 
   addExpense: async (e) => {

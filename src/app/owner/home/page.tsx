@@ -5,7 +5,7 @@ import { useAppStore } from '@/store/appStore';
 
 export default function OwnerHome() {
   const router = useRouter();
-  const { hydrate, user } = useAppStore();
+  const { hydrate, user, activeTrip, expenses } = useAppStore();
 
   useEffect(() => { hydrate(); }, [hydrate]);
 
@@ -26,20 +26,41 @@ export default function OwnerHome() {
         </div>
       </div>
 
-      {/* No active trip card */}
+      {/* Active trip card / no trip card */}
       <div className="mx-4 -mt-4 rounded-2xl p-5 bg-white" style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">🚛</span>
-            <div>
-              <p className="font-black text-slate-900">No active trip</p>
-              <p className="text-xs text-slate-400">Create a trip to get started</p>
+        {activeTrip ? (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">🚛</span>
+                <div>
+                  <p className="font-black text-slate-900">{activeTrip.from} → {activeTrip.to}</p>
+                  <p className="text-xs text-slate-400">
+                    {new Date(activeTrip.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-bold px-2 py-1 rounded-full text-white bg-green-600">Active</span>
+            </div>
+            <div className="flex gap-4 text-xs text-slate-500 mt-2 pt-2 border-t border-slate-50">
+              <span>Expenses: <span className="font-bold text-red-600">₹{expenses.reduce((s, e) => s + e.amount, 0).toLocaleString('en-IN')}</span></span>
+              <span>Driver: <span className="font-bold text-slate-700">Mithu</span></span>
             </div>
           </div>
-          <button onClick={() => router.push('/owner/create-trip')}
-            className="px-3 py-1.5 rounded-xl text-xs font-bold text-white"
-            style={{ background: '#4F46E5' }}>+ New</button>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">🚛</span>
+              <div>
+                <p className="font-black text-slate-900">No active trip</p>
+                <p className="text-xs text-slate-400">Create a trip to get started</p>
+              </div>
+            </div>
+            <button onClick={() => router.push('/owner/create-trip')}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold text-white"
+              style={{ background: '#4F46E5' }}>+ New</button>
+          </div>
+        )}
       </div>
 
       {/* Quick actions */}
@@ -59,15 +80,29 @@ export default function OwnerHome() {
         ))}
       </div>
 
-      {/* Empty recent */}
+      {/* Recent expenses */}
       <div className="mx-4 mt-4 mb-4">
         <p className="text-xs font-bold text-slate-400 tracking-widest mb-3">RECENT EXPENSES</p>
-        <div className="bg-white rounded-2xl p-8 flex flex-col items-center text-center"
-          style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
-          <span className="text-4xl mb-3">📭</span>
-          <p className="font-bold text-slate-500 text-sm">No expenses yet</p>
-          <p className="text-xs text-slate-400 mt-1">Expenses will appear here once Mithu starts a trip</p>
-        </div>
+        {expenses.length === 0 ? (
+          <div className="bg-white rounded-2xl p-8 flex flex-col items-center text-center"
+            style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
+            <span className="text-4xl mb-3">📭</span>
+            <p className="font-bold text-slate-500 text-sm">No expenses yet</p>
+            <p className="text-xs text-slate-400 mt-1">Expenses will appear here once Mithu starts a trip</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.07)' }}>
+            {expenses.slice(0, 5).map((exp, i) => (
+              <div key={exp.id} className={`flex items-center px-4 py-3 gap-3 ${i < Math.min(expenses.length, 5) - 1 ? 'border-b border-slate-50' : ''}`}>
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-slate-800 capitalize">{exp.category}</p>
+                  <p className="text-xs text-slate-400">{new Date(exp.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</p>
+                </div>
+                <p className="font-bold text-red-500 text-sm">−₹{exp.amount.toLocaleString('en-IN')}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

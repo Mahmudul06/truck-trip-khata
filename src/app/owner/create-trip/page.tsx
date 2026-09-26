@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAppStore } from '@/store/appStore';
+import { Trip } from '@/types';
 
 const DRIVERS = [
   { id: 'driver1', name: 'Mithu', phone: '70026 69491', status: 'Available' },
@@ -8,6 +10,7 @@ const DRIVERS = [
 
 export default function CreateTripPage() {
   const router = useRouter();
+  const { addTrip, user } = useAppStore();
   const [driverId, setDriverId] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -18,6 +21,19 @@ export default function CreateTripPage() {
 
   function handleCreate() {
     if (!driverId || !from || !to) return;
+    const trip: Trip = {
+      id: `trip_${Date.now()}`,
+      truckId: user?.truckId ?? 'truck1',
+      driverId,
+      ownerId: user?.id ?? 'owner1',
+      from: from.trim(),
+      to: to.trim(),
+      startDate: date || new Date().toISOString().split('T')[0],
+      status: 'active',
+      advanceAmount: Number(advance) || 0,
+      freightAmount: Number(freight) || 0,
+    };
+    addTrip(trip);
     setCreated(true);
     setTimeout(() => router.push('/owner/home'), 1500);
   }

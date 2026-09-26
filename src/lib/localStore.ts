@@ -6,6 +6,7 @@ const KEYS = {
   activeTrip: 'ttk_active_trip',
   expenses: 'ttk_expenses',
   moneyEntries: 'ttk_money',
+  trips: 'ttk_trips',
 };
 
 function get<T>(key: string): T | null {
@@ -49,4 +50,11 @@ export const local = {
     const existing = get<MoneyEntry[]>(KEYS.moneyEntries) ?? [];
     set(KEYS.moneyEntries, [m, ...existing]);
   },
+
+  getTrips: () => get<Trip[]>(KEYS.trips) ?? [],
+  addTrip: (t: Trip) => {
+    const existing = get<Trip[]>(KEYS.trips) ?? [];
+    set(KEYS.trips, [t, ...existing]);
+  },
+  setTrips: (list: Trip[]) => set(KEYS.trips, list),
 };
